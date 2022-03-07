@@ -1,0 +1,14 @@
+product: slemicro
+full_name: SUSE Linux Enterprise Micro
+type: platform
+
+benchmark_root: "../linux_os/guide"
+
+profiles_root: "./profiles"
+
+pkg_manager: "yum"
+
+init_system: "systemd"
+
+reference_uris:
+  cis: 'https://benchmarks.cisecurity.org/tools2/linux/CIS_slemicro_Benchmark_v1.0.pdf'
