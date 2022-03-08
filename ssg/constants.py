@@ -54,7 +54,7 @@ product_directories = [
     'rhel7', 'rhel8', 'rhel9',
     'rhosp10', 'rhosp13',
     'rhv4',
-    'sle12', 'sle15',
+    'sle12', 'sle15', 'slemicro',
     'ubuntu1604', 'ubuntu1804', 'ubuntu2004',
     'vsel',
     'wrlinux8', 'wrlinux1019'
@@ -220,6 +220,7 @@ FULL_NAME_TO_PRODUCT_MAPPING = {
     "Red Hat Virtualization 4": "rhv4",
     "SUSE Linux Enterprise 12": "sle12",
     "SUSE Linux Enterprise 15": "sle15",
+    "SUSE Linus Enterprise Micro": "slemicro",
     "Ubuntu 16.04": "ubuntu1604",
     "Ubuntu 18.04": "ubuntu1804",
     "Ubuntu 20.04": "ubuntu2004",
@@ -278,7 +279,7 @@ MULTI_PLATFORM_MAPPING = {
     "multi_platform_rhel": ["rhel7", "rhel8", "rhel9"],
     "multi_platform_rhosp": ["rhosp10", "rhosp13"],
     "multi_platform_rhv": ["rhv4"],
-    "multi_platform_sle": ["sle12", "sle15"],
+    "multi_platform_sle": ["sle12", "sle15", "slemicro"],
     "multi_platform_ubuntu": ["ubuntu1604", "ubuntu1804", "ubuntu2004"],
     "multi_platform_wrlinux": ["wrlinux8", "wrlinux1019"],
 }
