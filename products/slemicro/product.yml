@@ -7,10 +7,10 @@ benchmark_root: "../../linux_os/guide"
 
 profiles_root: "./profiles"
 
+init_system: "systemd"
+
 pkg_manager: "zypper"
 pkg_manager_config_file: "/etc/zypp/zypp.conf"
-
-init_system: "systemd"
 
 grub2_boot_path: "/boot/grub2"
 grub2_uefi_boot_path: "/boot/grub2"
@@ -19,7 +19,7 @@ aide_bin_path: "/usr/bin/aide"
 cpes_root: "../../shared/applicability"
 cpes:
   - slemicro:
-      name: "cpe:/o:slemicro:51"
+      name: "cpe:/o:suse:linux_enterprise_micro:5.1"
       title: "SUSE Linux Enterprise Micro"
       check_id: installed_OS_is_slemicro
 
@@ -28,5 +28,7 @@ platform_package_overrides:
   grub2: "grub2"
   sssd: "sssd"
 
+auid: 1000
+
 reference_uris:
-  cis: 'https://benchmarks.cisecurity.org/tools2/linux/CIS_slemicro_Benchmark_v1.0.pdf'
+  cis: 'https://www.cisecurity.org/benchmarks/suse_linux/'
