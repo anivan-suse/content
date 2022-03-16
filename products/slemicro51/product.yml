@@ -1,0 +1,35 @@
+product: slemicro51
+full_name: SUSE Linux Enterprise Micro 5.1
+type: platform
+
+benchmark_id: SLEMICRO-51
+benchmark_root: "../../linux_os/guide"
+
+profiles_root: "./profiles"
+
+init_system: "systemd"
+
+pkg_manager: "zypper"
+pkg_manager_config_file: "/etc/zypp/zypp.conf"
+
+grub2_boot_path: "/boot/grub2"
+grub2_uefi_boot_path: "/boot/grub2"
+aide_bin_path: "/usr/bin/aide"
+
+cpes_root: "../../shared/applicability"
+cpes:
+  - slemicro51:
+      name: "cpe:/o:suse:suse-slemicroos:5.1"
+      title: "SUSE Linux Enterprise Micro 5.1"
+      check_id: installed_OS_is_slemicro51
+
+platform_package_overrides:
+  login_defs: "shadow"
+  grub2: "grub2"
+  sssd: "sssd"
+
+auid: 1000
+
+reference_uris:
+  cis: 'https://www.cisecurity.org/benchmark/suse_linux/'
+
