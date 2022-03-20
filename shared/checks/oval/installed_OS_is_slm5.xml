@@ -19,7 +19,6 @@
       <criteria operator="OR">
         <criterion comment="SLM 5 Desktop is installed" test_ref="test_slm5_desktop" />
         <criterion comment="SLM 5 Server is installed" test_ref="test_slm5_server" />
-	<criterion comment="SLESM 5 for SAP Applications is installed" test_ref="test_slm5_for_sap" />
       </criteria>
     </criteria>
   </definition>
