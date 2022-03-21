@@ -1,9 +1,9 @@
-# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv,multi_platform_ubuntu,multi_platform_sle
+# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol,multi_platform_rhv,multi_platform_ubuntu,multi_platform_sle,multi_platform_slm
 # reboot = true
 # strategy = disable
 # complexity = low
 # disruption = medium
-{{% if product in ["sle12", "sle15"] %}}
+{{% if product in ["sle12", "sle15", "slm5"] %}}
 if ! LC_ALL=C grep -q -m 1 "^blacklist {{{ KERNMODULE }}}$" /etc/modprobe.d/50-blacklist.conf ; then
         echo -e "\n# Disable per security requirements" >> /etc/modprobe.d/50-blacklist.conf
         echo "blacklist {{{ KERNMODULE }}}" >> /etc/modprobe.d/50-blacklist.conf

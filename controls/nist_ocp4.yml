@@ -689,11 +689,21 @@ controls:
     https://issues.redhat.com/browse/CMP-216
   rules: []
 - id: AC-4(8)
-  status: pending
+  status: not applicable
   notes: |-
-    A control response is planned. Progress can be tracked via:
+    Security policy filters for data structures can check for maximum file lengths,
+    maximum field sizes, and data/file types (for structured and unstructured data)
+    can be met by OpenShift.
 
-    https://issues.redhat.com/browse/CMP-103
+    All of OpenShift extends the Kubernetes API with custom resource defintions.
+    The api has built-in limits and there are additional validations we can perform. [1]
+
+    However security policy filters for data content which checks for specific words enumerated values
+    or data value ranges, and hidden content, are an organizational control outside the scope of
+    OpenShift configuration.
+
+    [1] https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/#validation-rules
+
   rules: []
   description: |-
     The information system enforces information flow control using [Assignment: organization-defined security policy filters] as a basis for flow control decisions for [Assignment: organization-defined information flows].
@@ -990,11 +1000,15 @@ controls:
   - high
   - moderate
 - id: AC-6(3)
-  status: pending
+  status: not applicable
   notes: |-
-    A control response is planned. Progress can be tracked via:
+    This is an organizational/procedural control outside the scope of
+    OpenShift configuration.
 
-    https://issues.redhat.com/browse/CMP-116
+    The customer will be responsible for managing which user has appropriate
+    network access rights and document the rationale for such access in the
+    security plan for the information system.
+
   rules: []
   description: |-
     The organization authorizes network access to [Assignment: organization-defined privileged commands] only for [Assignment: organization-defined compelling operational needs] and documents the rationale for such access in the security plan for the information system.
@@ -1038,15 +1052,29 @@ controls:
     https://issues.redhat.com/browse/CMP-119
   rules: []
 - id: AC-6(7)
-  status: pending
+  status: not applicable
   notes: |-
-    Section a: A control response is planned. Progress can be tracked via:
+    Reviews and manage the privileges assigned to user is an organization control.
 
-    https://issues.redhat.com/browse/CMP-120
+    However to facilitate a control response, using Role Based Access Control (RBAC),
+    OpenShift roles can be used to grant various levels of access both cluster-wide as well as at
+    the project scope. Users and groups can be associated with, or bound
+    to, multiple roles at the same time.
 
-    Section b: A control response is planned. Progress can be tracked via:
+    For service accounts that might also have privileged access, Security
+    Context Constraints (SCC) should be used to limit privileged actions
+    in service accounts.
 
-    https://issues.redhat.com/browse/CMP-120
+    For the cluster, the kubeadmin user should be completely disabled.
+
+    More information on RBAC can be viewed at:
+    https://docs.openshift.com/container-platform/latest/authentication/using-rbac.html
+
+    More information for SCC can be viewed at:
+    https://docs.openshift.com/container-platform/latest/authentication/managing-security-context-constraints.html
+    Section b: The organization monitoring privileged role assignments is an organizational
+
+
   rules: []
   description: |-
     The organization:
@@ -1463,16 +1491,27 @@ controls:
   - high
   - moderate
 - id: AC-12(1)
-  status: pending
+  status: partial
   notes: |-
-    Section a: A control response is planned. Progress can be tracked via:
+    With any authentication mechanism the ability to revoke credentials if they
+    are compromised or no longer required, is a key control. Kubernetes client
+    certificate authentication does not allow for this due to a lack of support
+    for certificate revocation.
 
-    https://issues.redhat.com/browse/CMP-223
+    OpenShift's built-in OAuth server allows credential revocation by relying on
+    the Identity provider, as well as giving the administrators the ability to
+    revoke any tokens given to a specific user.
 
-    Section b: A control response is planned. Progress can be tracked via:
+    The OpenShift does not have the logout capability when cert is being used with
+    the default kubeadmin account, therefore we need to check if kubeadmin account
+    is disabled.
 
-    https://issues.redhat.com/browse/CMP-223
-  rules: []
+    Section b: A RFE has been filed. Progress can be tracked via: 
+
+    https://issues.redhat.com/browse/RFE-2645
+  rules:
+  - idp_is_configured
+  - kubeadmin_removed
   description: |-
     The information system:
      (a)   Provides a logout capability for user-initiated communications sessions whenever authentication is used to gain access to [Assignment: organization-defined information resources]; and
@@ -15668,13 +15707,23 @@ controls:
   - high
   - moderate
 - id: SI-4(24)
-  status: pending
+  status: automated
   notes: |-
-    A control response for SI-4(20) is planned. Engineering progress can be
-    tracked via:
+    The OpenShift Platform provides the File Integrity Operator to do
+    integrity verification of files and information on the nodes. [1]
 
-    https://issues.redhat.com/browse/CMP-541
-  rules: []
+    The operator can be configured to perform integrity checks at user-defined
+    intervals. [2]
+    A File Integrity Operator Prometheus rule will alert organization defined personnel for any integrity check failure. 
+
+    A user can also use external antivirus engine for detecting trojans, viruses, malware & other malicious threats. 
+
+    [1] https://docs.openshift.com/container-platform/latest/security/file_integrity_operator/file-integrity-operator-installation.html
+    [2] https://docs.openshift.com/container-platform/4.6/security/file_integrity_operator/file-integrity-operator-configuring.html
+  rules:
+  - file_integrity_exists
+  - file_integrity_notification_enabled
+  - compliance_notification_enabled
   description: |-
     The information system discovers, collects, distributes, and uses indicators of compromise.
 

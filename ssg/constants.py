@@ -52,9 +52,9 @@ product_directories = [
     'ol7', 'ol8', 'ol9',
     'opensuse',
     'rhel7', 'rhel8', 'rhel9',
-    'rhosp10', 'rhosp13',
     'rhv4',
-    'sle12', 'sle15', 'slemicro51',
+    'sle12', 'sle15',
+    'slm5',
     'ubuntu1604', 'ubuntu1804', 'ubuntu2004',
     'vsel',
     'wrlinux8', 'wrlinux1019'
@@ -120,7 +120,7 @@ OSCAP_PATH = "oscap"
 OSCAP_PROFILE_ALL_ID = "(all)"
 XCCDF11_NS = "http://checklists.nist.gov/xccdf/1.1"
 XCCDF12_NS = "http://checklists.nist.gov/xccdf/1.2"
-min_ansible_version = "2.5"
+min_ansible_version = "2.9"
 ansible_version_requirement_pre_task_name = \
     "Verify Ansible meets SCAP-Security-Guide version requirements."
 standard_profiles = ['standard', 'pci-dss', 'desktop', 'server']
@@ -215,12 +215,14 @@ FULL_NAME_TO_PRODUCT_MAPPING = {
     "Red Hat Enterprise Linux 7": "rhel7",
     "Red Hat Enterprise Linux 8": "rhel8",
     "Red Hat Enterprise Linux 9": "rhel9",
-    "Red Hat OpenStack Platform 10": "rhosp10",
-    "Red Hat OpenStack Platform 13": "rhosp13",
     "Red Hat Virtualization 4": "rhv4",
     "SUSE Linux Enterprise 12": "sle12",
     "SUSE Linux Enterprise 15": "sle15",
+<<<<<<< HEAD
     "SUSE Linus Enterprise Micro 5.1": "slemicro51",
+=======
+    "SUSE Linux Micro 5": "slm5",
+>>>>>>> fbd2c9ffeb95e21e7931568a33a2348f56ec66bc
     "Ubuntu 16.04": "ubuntu1604",
     "Ubuntu 18.04": "ubuntu1804",
     "Ubuntu 20.04": "ubuntu2004",
@@ -263,8 +265,8 @@ REFERENCES = dict(
 )
 
 
-MULTI_PLATFORM_LIST = ["rhel", "fedora", "rhosp", "rhv", "debian", "ubuntu",
-                       "wrlinux", "opensuse", "sle", "ol", "ocp", "rhcos",
+MULTI_PLATFORM_LIST = ["rhel", "fedora", "rhv", "debian", "ubuntu",
+                       "wrlinux", "opensuse", "sle", "slm", "ol", "ocp", "rhcos",
                        "example", "eks"]
 
 MULTI_PLATFORM_MAPPING = {
@@ -277,9 +279,13 @@ MULTI_PLATFORM_MAPPING = {
     "multi_platform_ocp": ["ocp4"],
     "multi_platform_rhcos": ["rhcos4"],
     "multi_platform_rhel": ["rhel7", "rhel8", "rhel9"],
-    "multi_platform_rhosp": ["rhosp10", "rhosp13"],
     "multi_platform_rhv": ["rhv4"],
+<<<<<<< HEAD
     "multi_platform_sle": ["sle12", "sle15", "slemicro51"],
+=======
+    "multi_platform_sle": ["sle12", "sle15", "slm5"],
+    "multi_platform_slm": ["slm5"],
+>>>>>>> fbd2c9ffeb95e21e7931568a33a2348f56ec66bc
     "multi_platform_ubuntu": ["ubuntu1604", "ubuntu1804", "ubuntu2004"],
     "multi_platform_wrlinux": ["wrlinux8", "wrlinux1019"],
 }
@@ -438,7 +444,6 @@ MAKEFILE_ID_TO_PRODUCT_MAP = {
     'firefox': 'Mozilla Firefox',
     'jre': 'Java Runtime Environment',
     'macos': 'Apple macOS',
-    'rhosp': 'Red Hat OpenStack Platform',
     'rhel': 'Red Hat Enterprise Linux',
     'rhv': 'Red Hat Virtualization',
     'debian': 'Debian',
@@ -447,6 +452,7 @@ MAKEFILE_ID_TO_PRODUCT_MAP = {
     'fuse': 'JBoss Fuse',
     'opensuse': 'openSUSE',
     'sle': 'SUSE Linux Enterprise',
+    'slm': 'SUSE Linux Micro',
     'vsel': 'McAfee VirusScan Enterprise for Linux',
     'wrlinux': 'WRLinux',
     'example': 'Example',

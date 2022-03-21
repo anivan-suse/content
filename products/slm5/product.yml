@@ -1,0 +1,44 @@
+product: slm5
+full_name: SUSE Linux Micro 5
+type: platform
+
+benchmark_id: SLM-5
+benchmark_root: "../../linux_os/guide"
+
+profiles_root: "./profiles"
+
+init_system: "systemd"
+
+pkg_manager: "zypper"
+pkg_manager_config_file: "/etc/zypp/zypp.conf"
+
+pkg_release: "5f68629b"
+pkg_version: "39db7c82"
+release_key_fingerprint: "FEAB502539D846DB2C0961CA70AF9E8139DB7C82"
+oval_feed_url: "https://ftp.suse.com/pub/projects/security/oval/suse.linux.micro.5.xml"
+
+grub2_boot_path: "/boot/grub2"
+grub2_uefi_boot_path: "/boot/grub2"
+aide_bin_path: "/usr/bin/aide"
+
+cpes_root: "../../shared/applicability"
+cpes:
+  - slm5-server:
+      name: "cpe:/o:suse:linux_micro_server:5"
+      title: "SUSE Linux Micro Server 5"
+      check_id: installed_OS_is_slm5
+
+  - slm5-desktop:
+      name: "cpe:/o:suse:linux_micro_desktop:5"
+      title: "SUSE Linux Micro Desktop 5"
+      check_id: installed_OS_is_slm5
+
+platform_package_overrides:
+  login_defs: "shadow"
+  grub2: "grub2"
+  sssd: "sssd"
+
+auid: 1000
+
+reference_uris:
+  cis: 'https://www.cisecurity.org/benchmark/suse_linux/'

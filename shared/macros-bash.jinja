@@ -275,8 +275,14 @@ do
         #   searched all of the files from /etc/audit/rules.d/*.rules location (since that audit rule can be defined
         #   in any of those files and if not, we want it to be inserted only once into /etc/audit/rules.d/privileged.rules file)
         #
-        elif [ "{{{ tool }}}" == "auditctl" ] || [[ "{{{ tool }}}" == "augenrules" && $count_of_inspected_files -eq "${#files_to_inspect[@]}" ]]
+	{{% if tool in ("augenrules", "auditctl") -%}}
+	{{% if tool == "augenrules" -%}}
+        elif [[ $count_of_inspected_files -eq "${#files_to_inspect[@]}" ]]
         then
+	{{%- endif %}}
+	{{% if tool == "auditctl" -%}}
+        else
+	{{%- endif %}}
             # Check if this sbinary wasn't already handled in some of the previous afile iterations
             # Return match only if whole sbinary definition matched (not in the case just prefix matched!!!)
             if [[ ! $(sed -ne "\|${sbinary}|p" <<< "${sbinaries_to_skip[*]}") ]]
@@ -286,6 +292,7 @@ do
                 echo "$expected_rule" >> "$output_audit_file"
             fi
             continue
+	{{%- endif %}}
         fi
     done
 done
@@ -638,7 +645,7 @@ zypper install -y "{{{ package }}}"
 {{%- if pkg_manager == "yum" or pkg_manager == "dnf" -%}}
 if rpm -q --quiet "{{{ package }}}" ; then
 {{% if SSG_TEST_SUITE_ENV %}}
-    {{{ pkg_manager }}} remove -y --setopt protected_packages= "{{{ package }}}"
+    rpm -e --nodeps "{{{ package }}}"
 {{% else %}}
     {{{ pkg_manager }}} remove -y "{{{ package }}}"
 {{% endif %}}
@@ -896,7 +903,8 @@ for firefox_dir in ${firefox_dirs}; do
             firefox_pref_dir="${firefox_dir}/${firefox_pref}"
         else
             firefox_pref_dir="${firefox_dir}/${firefox_preferences}"
-            mkdir -m 755 -p "${firefox_pref_dir}"
+            mkdir -p "${firefox_pref_dir}"
+            chmod 755 "${firefox_pref_dir}"
         fi
 
         # Make sure the Firefox .js file exists and has the appropriate permissions
@@ -946,10 +954,10 @@ for firefox_dir in ${firefox_dirs}; do
     if [ -d "${firefox_dir}" ]; then
         # Make sure the Firefox .cfg file exists and has the appropriate permissions
         if ! [ -f "${firefox_dir}/${firefox_cfg}" ] ; then
-            echo "//" "${firefox_dir}/${firefox_cfg}"
+            echo "//  IMPORTANT: Start your code on the 2nd line" > "${firefox_dir}/${firefox_cfg}"
             chmod 644 "${firefox_dir}/${firefox_cfg}"
-        elif ! [ $(head -1 "${firefox_dir}/${firefox_cfg}" | grep "^//$") ]; then
-            sed -i '1 i\//' "${firefox_dir}/${firefox_cfg}"
+        elif ! head -1 "${firefox_dir}/${firefox_cfg}" | grep -q "^//"; then
+            sed -i '1 i\// IMPORTANT: Start your code on the 2nd line' "${firefox_dir}/${firefox_cfg}"
         fi
 
         {{{ _put_into_firefox_cfg(config_item="lockPref", key=key, value_varname="value", where="${firefox_dir}/${firefox_cfg}", sed_separator=sed_separator) | indent(4 * 2) }}}
@@ -1026,7 +1034,8 @@ printf '%s\n' "{{{ message | replace('"', '\\"') }}}" >&2
 
 {{%- macro set_config_file(path, parameter, value, create, insert_after, insert_before, insensitive=true, separator=" ", separator_regex="\s\+", prefix_regex="^\s*", sed_path_separator="/") -%}}
     {{%- set new_line = parameter+separator+value -%}}
-    {{%- set line_regex = prefix_regex + ((parameter | escape_regex) | replace("/", "\/")) + separator_regex -%}}
+    {{#- An escaped dollar in the parameter is escaped because of its significance for the shell, so when making a regex out of the parameter, we remove the shell escape, as the regex escape will do its thing. -#}}
+    {{%- set line_regex = prefix_regex + ((parameter | replace("\\$", "$") | escape_regex) | replace("/", "\/")) + separator_regex -%}}
 if [ -e "{{{ path }}}" ] ; then
     {{{ lineinfile_absent(path, line_regex, insensitive, sed_path_separator=sed_path_separator) | indent(4) }}}
 else
@@ -1533,11 +1542,7 @@ do
         # Strip all the options and fields we know of,
         # than check if there was any field left over
         extra_fields=$(sed -E -e "s/{{{ action_arch_filters }}}//"  -e "s#{{{ other_filters }}}##" -e "s/{{{ auid_filters }}}//" -e "s/((:?-S [[:alnum:],]+)+)//g" -e "s/-F key=\w+|-k \w+//"<<< "$s_rule")
-        grep -q -- "-F" <<< "$extra_fields"
-        if [ $? -ne 0 ]
-        then
-            candidate_rules+=("$s_rule")
-        fi
+        grep -q -- "-F" <<< "$extra_fields" || candidate_rules+=("$s_rule")
     done
 
     if [[ ${#syscall_a[@]} -ge 1 ]]
@@ -1549,12 +1554,10 @@ do
             all_syscalls_found=0
             for syscall in "${syscall_a[@]}"
             do
-                grep -q -- "\b${syscall}\b" <<< "$rule_syscalls"
-                if [ $? -eq 1 ]
-                then
-                    # A syscall was not found in the candidate rule
-                    all_syscalls_found=1
-                fi
+                grep -q -- "\b${syscall}\b" <<< "$rule_syscalls" || {
+                   # A syscall was not found in the candidate rule
+                   all_syscalls_found=1
+                   }
             done
             if [[ $all_syscalls_found -eq 0 ]]
             then
@@ -1604,9 +1607,9 @@ if [ "$skip" -ne 0 ]; then
                 syscall_string+=" -S $syscall"
             done
         fi
-        other_string=$([[ {{{ other_filters }}} ]] && echo " {{{ other_filters }}}")
-        auid_string=$([[ {{{ auid_filters }}} ]] && echo " {{{ auid_filters }}}")
-        full_rule="{{{ action_arch_filters }}}${syscall_string}${other_string}${auid_string} -F key={{{ key }}}"
+        other_string=$([[ {{{ other_filters }}} ]] && echo " {{{ other_filters }}}") || /bin/true
+        auid_string=$([[ {{{ auid_filters }}} ]] && echo " {{{ auid_filters }}}") || /bin/true
+        full_rule="{{{ action_arch_filters }}}${syscall_string}${other_string}${auid_string} -F key={{{ key }}}" || /bin/true
         echo "$full_rule" >> "$default_file"
         chmod o-rwx ${default_file}
     else
@@ -1621,12 +1624,10 @@ if [ "$skip" -ne 0 ]; then
         new_grouped_syscalls="${rule_syscalls_to_edit}"
         for syscall in "${syscall_a[@]}"
         do
-            grep -q -- "\b${syscall}\b" <<< "${rule_syscalls_to_edit}"
-            if [ $? -eq 1 ]
-            then
-                # A syscall was not found in the candidate rule
-                new_grouped_syscalls+="${delimiter}${syscall}"
-            fi
+            grep -q -- "\b${syscall}\b" <<< "${rule_syscalls_to_edit}" || {
+               # A syscall was not found in the candidate rule
+               new_grouped_syscalls+="${delimiter}${syscall}"
+               }
         done
 
         # Group the syscall in the rule
@@ -1636,44 +1637,45 @@ fi
 {{%- endmacro %}}
 
 {{#
+    Ensures that /etc/default/grub file contains the ARG_NAME_VALUE.
+:param ARG_NAME: name of the grub parameter, e.g.: "audit"
+:param ARG_NAME_VALUE: parameter together with the value to ensure, e.g.: "audit=1"
+#}}
+{{%- macro update_etc_default_grub_manually(ARG_NAME, ARG_NAME_VALUE) -%}}
+# Correct the form of default kernel command line in GRUB
+if grep -q '^GRUB_CMDLINE_LINUX=.*{{{ ARG_NAME }}}=.*"'  '/etc/default/grub' ; then
+       # modify the GRUB command-line if an {{{ ARG_NAME }}}= arg already exists
+       sed -i "s/\(^GRUB_CMDLINE_LINUX=\".*\){{{ ARG_NAME }}}=[^[:space:]]\+\(.*\"\)/\1{{{ ARG_NAME_VALUE }}}\2/"  '/etc/default/grub'
+else
+       # no {{{ ARG_NAME }}}=arg is present, append it
+       sed -i "s/\(^GRUB_CMDLINE_LINUX=\".*\)\"/\1 {{{ ARG_NAME_VALUE }}}\"/"  '/etc/default/grub'
+fi
+{{%- endmacro %}}
+
+{{#
 
     Remediation for grub2 bootloader arguments
 #}}
 {{% macro grub2_bootloader_argument_remediation(ARG_NAME, ARG_NAME_VALUE) %}}
-{{% if product in ["rhel7", "ol7", "rhel9"] or 'ubuntu' in product %}}
-{{% if '/' in ARG_NAME %}}
-{{{ raise("ARG_NAME (" + ARG_NAME + ") uses sed path separator (/) in " + rule_id) }}}
-{{% elif '/' in ARG_NAME_VALUE %}}
-{{{ raise("ARG_NAME_VALUE (" + ARG_NAME_VALUE + ") uses sed path separator (/) in " + rule_id) }}}
-{{% endif %}}
-# Correct the form of default kernel command line in GRUB
-if grep -q '^GRUB_CMDLINE_LINUX=.*{{{ ARG_NAME }}}=.*"'  '/etc/default/grub' ; then
-	# modify the GRUB command-line if an {{{ ARG_NAME }}}= arg already exists
-	sed -i 's/\(^GRUB_CMDLINE_LINUX=".*\){{{ ARG_NAME }}}=[^[:space:]]*\(.*"\)/\1 {{{ ARG_NAME_VALUE }}} \2/'  '/etc/default/grub'
-else
-	# no {{{ ARG_NAME }}}=arg is present, append it
-	sed -i 's/\(^GRUB_CMDLINE_LINUX=".*\)"/\1 {{{ ARG_NAME_VALUE }}}"/'  '/etc/default/grub'
-fi
-
 {{% if 'ubuntu' in product %}}
-update-grub
+	{{% set grub_helper_executable = "update-grub" -%}}
 {{% else %}}
-# Correct the form of kernel command line for each installed kernel in the bootloader
-grubby --update-kernel=ALL --args="{{{ ARG_NAME_VALUE }}}"
-{{% endif %}}
-{{% else %}}
-# Correct grub2 kernelopts value using grub2-editenv
-existing_kernelopts="$(grub2-editenv - list | grep kernelopts)"
-if ! printf '%s' "$existing_kernelopts" | grep -qE '^kernelopts=(.*\s)?{{{ ARG_NAME_VALUE }}}(\s.*)?$'; then
-  if test -n "$existing_kernelopts"; then
-    grub2-editenv - set "$existing_kernelopts {{{ ARG_NAME_VALUE }}}"
-  else
-    grub2-editenv - set "kernelopts={{{ ARG_NAME_VALUE }}}"
-  fi
-fi
-{{% endif %}}
+	{{% set grub_helper_executable = "grubby" -%}}
+{{% endif -%}}
+{{% set grub_helper_args = ["--update-kernel=ALL", "--args=" ~ ARG_NAME_VALUE] -%}}
 
+{{% if 'ubuntu' in product or product in ['rhel7', 'ol7'] %}}
+{{{ update_etc_default_grub_manually(ARG_NAME, ARG_NAME_VALUE) }}}
+{{% endif -%}}
+
+{{% if product in ["rhel8", "ol8"] %}}
+{{# Suppress the None output of append -#}}
+{{{ grub_helper_args.append("--env=/boot/grub2/grubenv") or "" -}}}
+{{% endif -%}}
+
+{{{ grub_helper_executable }}} {{{ " ".join(grub_helper_args) }}}
 {{% endmacro %}}
+
 
 {{#
   This macro creates a bash conditional which is used to determine if a remediation is applicable.
@@ -1728,13 +1730,79 @@ Example macro invocation:
 #}}
 {{%- macro bash_chromium_pol_setting(chrome_pol_file, chrome_pol_dir, pol_setting, pol_setting_val, pol_setting_val_edit=None) %}}
 {{% if not pol_setting_val_edit %}}
-{{ pol_setting_val_edit=pol_setting_val }}
+{{% set pol_setting_val_edit = pol_setting_val %}}
 {{% endif %}}
-grep -q {{{ pol_setting }}} {{{ chrome_pol_dir }}}{{{ chrome_pol_file }}}
 
-if ! [ $? -eq 0 ] ; then
+if ! grep -q {{{ pol_setting }}} {{{ chrome_pol_dir }}}{{{ chrome_pol_file }}}; then
    sed -i -e '/{/a \  "'{{{ pol_setting }}}'": '{{{ pol_setting_val_edit }}}',' {{{ chrome_pol_dir }}}{{{ chrome_pol_file }}}
 else
    sed -i -e 's/\"'{{{ pol_setting }}}'.*/\"'{{{ pol_setting }}}'\": '{{{ pol_setting_val }}}',/g' {{{ chrome_pol_dir }}}{{{ chrome_pol_file }}}
 fi
 {{%- endmacro -%}}
+
+
+{{#
+    Macro that lets you define the body of a loop that iterates over the output of the find command
+    Use with the call block syntax {{% call iterate_over_find_output("fname", "mydir -name *.conf") %}} ...
+#}}
+{{% macro iterate_over_find_output(varname, find_args="") -%}}
+while IFS= read -r -d '' {{{ varname }}}; do
+    {{{ caller() | indent(4) }}}
+done <   <(find {{{ find_args }}} -print0)
+{{%- endmacro %}}
+
+
+{{#
+    Macro that lets you define the body of a loop that iterates over the output of any command
+    Use with the call block syntax {{% call iterate_over_find_output("fname", "awk ... myfile") %}} ...
+#}}
+{{% macro iterate_over_command_output(varname, command_and_its_args) -%}}
+while IFS= read -r {{{ varname }}}; do
+    {{{ caller() | indent(4) }}}
+done <   <({{{ command_and_its_args }}})
+{{%- endmacro %}}
+
+{{#
+  # Ensure key is set to correct value under a correct section in an .ini style config file
+
+:param files:   list of space-separated files to add key = value to (may contain wildcards)
+                if none contain section, create and append to FIRST file
+:param section: section to add key = value under
+:param key:     key
+:param value:   value
+
+Example macro invocation(s):
+
+    bash_ensure_ini_config("/etc/sssd/sssd.conf", "pam", "offline_credentials_expiration", "1")
+    bash_ensure_ini_config("/etc/sssd/sssd.conf /etc/sssd/conf.d/*.conf", "sssd", "user", "sssd")
+
+#}}
+{{% macro bash_ensure_ini_config(files, section, key, value) -%}}
+found=false
+
+# set value in all files if they contain section or key
+for f in $(echo -n "{{{ files }}}"); do
+    if [ ! -e "$f" ]; then
+        continue
+    fi
+
+    # find key in section and change value
+    if grep -qzosP "[[:space:]]*\[{{{ section }}}\]([^\n\[]*\n+)+?[[:space:]]*{{{ key }}}" "$f"; then
+            sed -i "s/{{{ key }}}[^(\n)]*/{{{ key }}} = {{{ value }}}/" "$f"
+            found=true
+
+    # find section and add key = value to it
+    elif grep -qs "[[:space:]]*\[{{{ section }}}\]" "$f"; then
+            sed -i "/[[:space:]]*{{{ section }}}/a {{{ key }}} = {{{ value }}}" "$f"
+            found=true
+    fi
+done
+
+# if section not in any file, append section with key = value to FIRST file in files parameter
+if ! $found ; then
+    file=$(echo "{{{ files }}}" | cut -f1 -d' ')
+    mkdir -p "$(dirname "$file")"
+    echo -e "[{{{ section }}}]\n{{{ key }}} = {{{ value }}}" >> "$file"
+fi
+{{%- endmacro %}}
+

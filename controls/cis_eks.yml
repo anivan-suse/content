@@ -816,7 +816,8 @@ controls:
         for known vulnerabilities.
       levels:
       - level_1
-      rules: []
+      rules:
+      - image_scanning
     - id: 5.1.2
       title: >-
         5.1.2 Minimize user access to Amazon ECR
@@ -836,7 +837,8 @@ controls:
         built images with vulnerable containers.
       levels:
       - level_1
-      rules: []
+      rules:
+      - registry_access
     - id: 5.1.3
       title: >-
         5.1.3 Minimize cluster access to read-only for Amazon ECR
@@ -859,7 +861,8 @@ controls:
           required role.
       levels:
       - level_1
-      rules: []
+      rules:
+      - read_only_registry_access
     - id: 5.1.4
       title: >-
         5.1.4 Minimize Container Registries to only those approved
@@ -879,7 +882,8 @@ controls:
           registries reduces this risk.
       levels:
       - level_2
-      rules: []
+      rules:
+      - approved_registries
   - id: '5.2'
     title: >-
       5.2 Identity and Access Management (IAM)
@@ -916,7 +920,8 @@ controls:
         connections in rules.
       levels:
       - level_1
-      rules: []
+      rules:
+      - dedicated_service_accounts
   - id: '5.3'
     title: >-
       5.3 AWS Key Management Service (KMS)
@@ -960,7 +965,8 @@ controls:
         the ability to use network connections in rules.
       levels:
       - level_1
-      rules: []
+      rules:
+      - secret_encryption
   - id: '5.4'
     title: >-
       5.4 Cluster Networking
@@ -1009,7 +1015,8 @@ controls:
         the ability to use network connections in rules.
       levels:
       - level_1
-      rules: []
+      rules:
+      - control_plane_access
     - id: 5.4.2
       title: >-
         5.4.2 Ensure clusters are created with Private Endpoint Enabled and Public Access Disabled
@@ -1042,7 +1049,8 @@ controls:
         ability to use network connections in rules.
       levels:
       - level_2
-      rules: []
+      rules:
+      - endpoint_configuration
     - id: 5.4.3
       title: >-
         5.4.3 Ensure clusters are created with Private Nodes
@@ -1066,7 +1074,8 @@ controls:
         ability to use network connections in rules.
       levels:
       - level_1
-      rules: []
+      rules:
+      - private_nodes
     - id: 5.4.4
       title: >-
         5.4.4 Ensure Network Policy is Enabled and set as appropriate
@@ -1095,7 +1104,8 @@ controls:
         This check is manual because it requires deployment-specific knowledge.
       levels:
       - level_1
-      rules: []
+      rules:
+      - confirure_network_policy
     - id: 5.4.5
       title: >-
         5.4.5 Encrypt traffic to HTTPS load balancers with TLS certificates
@@ -1115,7 +1125,8 @@ controls:
         the AWS EKS configuration.
       levels:
       - level_2
-      rules: []
+      rules:
+      - configure_tls
   - id: '5.5'
     title: >-
       5.5 Authentication and Authorization
@@ -1148,7 +1159,8 @@ controls:
         about the namespaces to audit it effectively.
       levels:
       - level_2
-      rules: []
+      rules:
+      - iam_integration
   - id: '5.6'
     title: >-
       5.6 Other Cluster Configurations
@@ -1193,4 +1205,5 @@ controls:
         endpoint to audit and remediate.
       levels:
       - level_2
-      rules: []
+      rules:
+      - fargate
