@@ -15,10 +15,21 @@ description: |-
 
 
 selections:
-    #
-    #
-    #
-    #
+    - var_account_disable_post_pw_expiration=35
+    - var_accounts_authorized_local_users_regex=slm5
+    - var_accounts_fail_delay=4
+    - var_accounts_max_concurrent_login_sessions=10
+    - var_accounts_maximum_age_login_defs=60
+    - var_accounts_minimum_age_login_defs=7
+    - var_accounts_tmout=15_min
+    - var_auditd_disk_full_action=syslog
+    - var_password_pam_delay=4000000
+    - var_password_pam_unix_remember=5
+    - var_removable_partition=dev_cdrom
+    - var_sshd_set_keepalive=0
+    - var_sssd_memcache_timeout=1_day
+    - var_sudo_timestamp_timeout=always_prompt
+    - var_time_service_set_maxpoll=18_hours
     #
     # "accounts_authorized_local_users" rule is enabled
     # "auditd_audispd_configure_remote_server" rule is enabled
@@ -241,22 +252,5 @@ selections:
     - sysctl_net_ipv6_conf_default_accept_redirects
     - sysctl_net_ipv6_conf_default_accept_source_route
     - sysctl_net_ipv6_conf_default_forwarding
-    - vlock_installed
-    - wireless_disable_interfaces
-    - var_account_disable_post_pw_expiration=35
-    - var_accounts_authorized_local_users_regex=slm5
-    - var_accounts_fail_delay=4
-    - var_accounts_max_concurrent_login_sessions=10
-    - var_accounts_maximum_age_login_defs=60
-    - var_accounts_minimum_age_login_defs=7
-    - var_accounts_tmout=15_min
-    - var_auditd_disk_full_action=syslog
-    - var_password_pam_delay=4000000
-    - var_password_pam_unix_remember=5
-    - var_removable_partition=dev_cdrom
-    - var_sshd_set_keepalive=0
-    - var_sssd_memcache_timeout=1_day
-    - var_sudo_timestamp_timeout=always_prompt
-    - var_time_service_set_maxpoll=18_hours
     - vlock_installed
     - wireless_disable_interfaces
