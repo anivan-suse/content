@@ -1,6 +1,6 @@
 documentation_complete: true
 
-prodtype: rhel8,rhel9,sle12,sle15
+prodtype: rhel8,rhel9,sle12,sle15,slm5
 
 title: 'Set Password Hashing Rounds in /etc/login.defs'
 

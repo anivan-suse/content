@@ -1,6 +1,6 @@
 documentation_complete: true
 
-prodtype: sle12,sle15
+prodtype: sle12,sle15,slm5
 
 title: 'Verify that local /var/log/messages is not world-readable'
 

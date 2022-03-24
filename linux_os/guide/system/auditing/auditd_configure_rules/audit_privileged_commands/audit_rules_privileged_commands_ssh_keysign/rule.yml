@@ -10,7 +10,7 @@
 
 documentation_complete: true
 
-prodtype: fedora,ol7,ol8,ol9,rhcos4,rhel7,rhel8,rhel9,rhv4,sle12,sle15,ubuntu2004,wrlinux1019
+prodtype: fedora,ol7,ol8,ol9,rhcos4,rhel7,rhel8,rhel9,rhv4,sle12,sle15,ubuntu2004,wrlinux1019,slm5
 
 title: 'Ensure auditd Collects Information on the Use of Privileged Commands - ssh-keysign'
 
@@ -85,3 +85,4 @@ template:
         path: /usr/libexec/openssh/ssh-keysign
         path@sle12: /usr/lib/ssh/ssh-keysign
         path@sle15: /usr/lib/ssh/ssh-keysign
+        path@slm5: /usr/lib/ssh/ssh-keysign

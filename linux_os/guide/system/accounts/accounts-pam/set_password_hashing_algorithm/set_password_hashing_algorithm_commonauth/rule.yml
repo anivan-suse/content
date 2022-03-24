@@ -1,6 +1,6 @@
 documentation_complete: true
 
-prodtype: sle15
+prodtype: sle15,slm5
 
 title: "Set PAM's Common Authentication Hashing Algorithm"
 
