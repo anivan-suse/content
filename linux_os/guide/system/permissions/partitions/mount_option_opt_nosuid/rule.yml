@@ -23,6 +23,8 @@ identifiers:
     cce@rhel7: CCE-83317-8
     cce@rhel8: CCE-83319-4
     cce@rhel9: CCE-83880-5
+    cce@sle12: CCE-91545-4
+    cce@sle15: CCE-91240-2
 
 references:
     anssi: BP28(R12)
