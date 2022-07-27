@@ -21,6 +21,8 @@ grub2_boot_path: "/boot/grub2"
 grub2_uefi_boot_path: "/boot/grub2"
 aide_bin_path: "/usr/bin/aide"
 
+chrony_conf_path: "/etc/chrony.conf"
+
 cpes_root: "../../shared/applicability"
 cpes:
   - sle15-server:
